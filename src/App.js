@@ -1,104 +1,57 @@
-import './App.css';
-import { Chessboard } from "react-chessboard";
-import { useState } from "react";
-import Chess from 'chess.js'
+import React, { useState, useEffect } from "react";
+import { Routes, Route, Link } from "react-router-dom";
+import "bootstrap/dist/css/bootstrap.min.css";
+import "./App.css";
 
+import AuthService from "./services/authservice";
 
-function PuzzleSolver(){
-  const [lastMove, setLastMove] = useState("");
+import Login from "./components/login";
+import Register from "./components/register";
+import Home from "./components/chess/chess";
+// import AuthVerify from "./common/AuthVerify";
+
+const App = () => {
   return (
     <div>
-      <p>{lastMove}</p>
-      <CustomChessboard setLastMove={setLastMove}/>
+      <nav className="navbar navbar-expand navbar-dark bg-dark">
+        <Link to={"/"} className="navbar-brand">
+          chess
+        </Link>
+        <div className="navbar-nav mr-auto">
+          <li className="nav-item">
+            <Link to={"/home"} className="nav-link">
+              Home
+            </Link>
+          </li>
+        </div>
+
+        <div className="navbar-nav ml-auto">
+          <li className="nav-item">
+            <Link to={"/login"} className="nav-link">
+              Login
+            </Link>
+          </li>
+
+          <li className="nav-item">
+            <Link to={"/register"} className="nav-link">
+              Sign Up
+            </Link>
+          </li>
+        </div>
+      </nav>
+
+      <div className="container mt-3">
+        <Routes>
+          <Route exact path={"/"} element={<Home />} />
+          <Route exact path={"/home"} element={<Home />} />
+          <Route exact path="/login" element={<Login />} />
+          <Route exact path="/register" element={<Register />} />
+        </Routes>
+      </div>
+
+      {/* <AuthVerify logOut={logOut}/> */}
     </div>
   );
-}
+};
 
-
-function CustomChessboard({setLastMove}){
-  const [game, setGame] = useState(new Chess());
-  const [squareStyles, setSquareStyles] = useState({});
-  //const [nextMoveSquares, setNextMoveSquares] = useState({});
-  const [sourceSquare, setSourceSquare] = useState(null);
-
-  function makeAMove(move) {
-    const gameCopy = new Chess(game.fen());
-    const result = gameCopy.move(move);
-    setGame(gameCopy);
-    if (result != null){
-      setLastMove(result.san);
-    }
-    return result;
-  }
-
-  function onDrop(initialSquare, targetSquare) {
-    const move = makeAMove({
-      from: initialSquare,
-      to: targetSquare,
-      promotion: "q",
-    });
-
-    // illegal move
-    if (move === null) return false;
-    return true;
-  }
-
-  function onSquareClick(square){
-      setSquareStyles({});
-      if (sourceSquare == null){
-        setSourceSquare(square);
-        putCircleOnNextMoveSquares(square);
-      } else {
-        const move = makeAMove({
-          from: sourceSquare,
-          to: square,
-          promotion: "q",
-        });
-        setSourceSquare(null);
-        setSquareStyles({});
-      }
-  }
-
-  function putCircleOnNextMoveSquares(square){
-    const moves = game.moves({
-      square,
-      verbose: true,
-    });
-    let squareStylesCopy = {...squareStyles};
-    moves.forEach(move => {
-      if (squareStylesCopy[move.to] === undefined) {
-        squareStylesCopy[move.to] = {background: "radial-gradient(circle, rgba(0,0,0,.1) 85%, transparent 85%)", borderRadius: "50%"}
-      }else{
-        squareStylesCopy[move.to].background = "radial-gradient(circle, rgba(0,0,0,.1) 85%, transparent 85%)";
-        squareStylesCopy[move.to].borderRadius = "50%";
-      }
-    })
-    setSquareStyles(squareStylesCopy);
-
-  }
-
-  function onSquareRightClick(square){
-    setSquareStyles({
-      ...squareStyles,
-        [square]: squareStyles[square]?.backgroundColor === undefined ? {backgroundColor: "rgba(0, 0, 255, 0.4)"} : undefined
-      }
-    );
-}
-  
-
-  return <Chessboard 
-      position={game.fen()} 
-      onPieceDrop={onDrop} 
-      onSquareClick={onSquareClick} 
-      onSquareRightClick={onSquareRightClick}
-      customSquareStyles={squareStyles}/>;
-}
-
-function App() {
-  return (
-    <div class="chessboard-div">
-      <PuzzleSolver/>
-    </div>
-  );
-}
 export default App;
