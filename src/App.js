@@ -7,7 +7,8 @@ import AuthService from "./services/authservice";
 
 import Login from "./components/login";
 import Register from "./components/register";
-import Home from "./components/chess/chess";
+import Chessboard from "./components/chess/chess";
+import Home from "./components/home/home";
 // import AuthVerify from "./common/AuthVerify";
 
 const App = () => {
@@ -42,10 +43,11 @@ const App = () => {
 
       <div className="container mt-3">
         <Routes>
-          <Route exact path={"/"} element={<Home />} />
+          <Route exact path={"/"} element={<Login />} />
           <Route exact path={"/home"} element={<Home />} />
           <Route exact path="/login" element={<Login />} />
           <Route exact path="/register" element={<Register />} />
+          <Route exact path="/Chessboard" element={<Chessboard />} />
         </Routes>
       </div>
 
