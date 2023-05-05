@@ -5,6 +5,7 @@ import Input from "react-validation/build/input";
 import CheckButton from "react-validation/build/button";
 
 import AuthService from "../services/authservice";
+import { useAuth, auth } from "../common/authHook";
 
 const required = (value) => {
   if (!value) {
@@ -26,7 +27,14 @@ const Login = () => {
   const [message, setMessage] = useState("");
 
   const navigate = useNavigate();
+  const { auth, setAuth } = useAuth();
 
+  const handleRedirectIfAuth = () => {
+    if (auth) {
+      navigate("/home");
+    }
+  };
+    
   const onChangeUsername = (e) => {
     const username = e.target.value;
     setUsername(username);
@@ -48,7 +56,8 @@ const Login = () => {
     if (checkBtn.current.context._errors.length === 0) {
       AuthService.login(username, password).then(
         () => {
-          navigate("/profile");
+          setAuth(true);
+          navigate("/home");
           window.location.reload();
         },
         (error) => {
@@ -58,7 +67,7 @@ const Login = () => {
               error.response.data.message) ||
             error.message ||
             error.toString();
-
+            console.log(error)
           setLoading(false);
           setMessage(resMessage);
         }
@@ -67,6 +76,8 @@ const Login = () => {
       setLoading(false);
     }
   };
+
+  handleRedirectIfAuth();
 
   return (
     <div className="col-md-12">

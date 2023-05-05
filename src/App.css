@@ -1,7 +1,7 @@
 .App {
   text-align: center;
 }
-.chessboard-div{
+.chessboard-div {
   max-width: 800px;
   max-height: 800px;
 }

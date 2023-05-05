@@ -1,27 +1,27 @@
-import React, { useState } from "react";
+import { useState } from "react";
+import Question from "./question";
+import data from "./data";
+import './home.css';
 
-function Accordion() {
-  const [isExpanded, setIsExpanded] = useState(false);
+import { useAuth } from "../../common/authHook";
 
-  function handleToggle() {
-    setIsExpanded(!isExpanded);
-  }
+function Home() {
+  const [questions, setQuestions] = useState(data);
+  const { auth } = useAuth();
 
   return (
-    <div>
-      <button onClick={handleToggle}>
-        {isExpanded ? "Collapse" : "Expand"}
-      </button>
-      {isExpanded && (
-        <div>
-          <p>Menu Item 1</p>
-          <p>Menu Item 2</p>
-          <p>Menu Item 3</p>
-        </div>
-      )}
+    <div className="home">
+      <div className="containerHome">
+        {auth ? (
+          questions.map((question) => (
+            <Question key={question.id} {...question} />
+          ))
+        ) : (
+          <p>You need to be authenticated to see the questions</p>
+        )}
+      </div>
     </div>
   );
-
 }
 
-export default Accordion;
+export default Home;
