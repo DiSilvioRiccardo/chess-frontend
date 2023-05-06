@@ -1,13 +1,19 @@
 import "./chess.css";
 import { Chessboard } from "react-chessboard";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Chess from "chess.js";
 
 function PuzzleSolver(props) {
   const [lastMove, setLastMove] = useState("");
   const [turn, setTurn] = useState(props.fen.split(" ")[1] === "w" ? "b" : "w");
   const [game, setGame] = useState(new Chess(props.fen));
+  const [puzzleSolved, setPuzzleSolved] = useState(false);
+  const [tries, setTries] = useState(0);
   const orientation = props.fen.split(" ")[1] === "w" ? "black" : "white"
+
+  function increaseTries(){
+    setTries(tries + 1);
+  }
 
   const handleChildStateChange = (game) => {
     setGame(game);
@@ -15,7 +21,6 @@ function PuzzleSolver(props) {
 
   const handleNewGameClick = () => {
     setGame(new Chess(props.fen));
-    setTurn(game.turn());
     setLastMove("");
   };
 
@@ -27,9 +32,6 @@ function PuzzleSolver(props) {
           <span>Checkmate!</span>
         </div>
       ) : null}
-      <div className={`turn-indicator ${turn === "w" ? "white" : "black"}`}>
-        {turn === "w" ? "White plays" : "Black plays"}
-      </div>
       <div className="new-game-button-container">
         <button className="new-game-button" onClick={handleNewGameClick}>
           New Game
@@ -44,16 +46,29 @@ function PuzzleSolver(props) {
         onChildStateChange={handleChildStateChange}
         moves = {props.moves}
         orientation = {orientation}
+        increaseTries = {increaseTries}
+        setPuzzleSolved = {setPuzzleSolved}
       />
+      <p>{tries} {puzzleSolved.toString()}</p>
     </div>
   );
 }
 //{ setLastMove, setTurn, turn, game, setGame, onChildStateChange, moves, orientation }
-function CustomChessboard({ setLastMove, setTurn, turn, game, setGame, onChildStateChange, moves, orientation }) {
+function CustomChessboard({ setLastMove, setTurn, turn, game, setGame, onChildStateChange, moves, orientation, setPuzzleSolved, increaseTries }) {
   const [squareStyles, setSquareStyles] = useState({});
   const [sourceSquare, setSourceSquare] = useState(null);
   const [movesArray, setMovesArray] = useState(moves.split(" "));
-  
+  let inputElement = useRef();
+  let chessboard = 
+    <Chessboard
+      position={game.fen()}
+      onPieceDrop={onDrop}
+      onSquareClick={onSquareClick}
+      onSquareRightClick={onSquareRightClick}
+      customSquareStyles={squareStyles}
+      boardOrientation={orientation}
+    />;
+
   useEffect(() => {
     setTimeout(() => {
       makeAMove({from: movesArray[0].substring(0, 2), to: movesArray[0].substring(2,4)}, true);
@@ -68,9 +83,8 @@ function CustomChessboard({ setLastMove, setTurn, turn, game, setGame, onChildSt
     let result = gameCopy.move(move);
     setGame(gameCopy);
     onChildStateChange(gameCopy);
-    if (result != null) {
-      //setLastMove(result.san);
-      setTurn(game.turn());
+    if (result != null & !isInitialMove){
+      setLastMove(result.san);
     }
     //incorrect move in puzzle
     if (move.from !== movesArray[0].substring(0, 2) || move.to !== movesArray[0].substring(2, 4)){
@@ -79,12 +93,12 @@ function CustomChessboard({ setLastMove, setTurn, turn, game, setGame, onChildSt
       console.log(movesArray[0].substring(0, 2));
       console.log(move.to);
       console.log(movesArray[0].substring(2, 4));
+      result != null ? increaseTries() : console.log("null result, not increasing tries");
       gameCopy = new Chess(game.fen());
       result = gameCopy.undo();
       setTimeout(() => setGame(gameCopy), 500);
       return result;
     }
-    console.log("initial move was correct");
     let movesArrayCopy = movesArray;
     movesArrayCopy.shift();
     setMovesArray(movesArrayCopy);
@@ -94,12 +108,13 @@ function CustomChessboard({ setLastMove, setTurn, turn, game, setGame, onChildSt
       console.log("making response for other side");
       console.log(movesArray[0]);
       gameCopy.move({from: movesArray[0].substring(0, 2), to: movesArray[0].substring(2,4)});
-      setGame(gameCopy)
+      setGame(gameCopy);
       movesArrayCopy.shift();
       setMovesArray(movesArrayCopy);
       console.log("after making response for other side", movesArray);
+    }else if (movesArray.length === 0){
+      setPuzzleSolved(true);
     }
-
     return result;
   }
 
@@ -110,12 +125,17 @@ function CustomChessboard({ setLastMove, setTurn, turn, game, setGame, onChildSt
       promotion: "q",
     });
 
+    //State does not update without calling this, no idea why
+    onSquareClick(null);
     // illegal move
     if (move === null) return false;
     return true;
   }
 
   function onSquareClick(square) {
+    if (square == null){
+      setSourceSquare(null);
+    }
     setSquareStyles({});
     if (sourceSquare == null) {
       setSourceSquare(square);
@@ -168,16 +188,12 @@ function CustomChessboard({ setLastMove, setTurn, turn, game, setGame, onChildSt
     });
   }
   
-  return (
-    <Chessboard
-      position={game.fen()}
-      onPieceDrop={onDrop}
-      onSquareClick={onSquareClick}
-      onSquareRightClick={onSquareRightClick}
-      customSquareStyles={squareStyles}
-      boardOrientation={orientation}
-    />
-  );
+  return chessboard;
+}
+
+
+function ResultsContainer(){
+
 }
 
 function App() {
