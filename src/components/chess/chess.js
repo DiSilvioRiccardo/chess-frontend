@@ -1,20 +1,21 @@
 import "./chess.css";
 import { Chessboard } from "react-chessboard";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Chess from "chess.js";
 
 function PuzzleSolver(props) {
   const [lastMove, setLastMove] = useState("");
-  const [turn, setTurn] = useState("w");
-  const [game, setGame] = useState(new Chess("r6k/pp2r2p/4Rp1Q/3p4/8/1N1P2R1/PqP2bPP/7K b - - 0 24"));
+  const [turn, setTurn] = useState(props.fen.split(" ")[1] === "w" ? "b" : "w");
+  const [game, setGame] = useState(new Chess(props.fen));
+  const orientation = props.fen.split(" ")[1] === "w" ? "black" : "white"
 
   const handleChildStateChange = (game) => {
     setGame(game);
   };
 
   const handleNewGameClick = () => {
-    setGame(new Chess("r6k/pp2r2p/4Rp1Q/3p4/8/1N1P2R1/PqP2bPP/7K b - - 0 24"));
-    setTurn("w");
+    setGame(new Chess(props.fen));
+    setTurn(game.turn());
     setLastMove("");
   };
 
@@ -41,25 +42,64 @@ function PuzzleSolver(props) {
         game = {game}
         setGame = {setGame}
         onChildStateChange={handleChildStateChange}
+        moves = {props.moves}
+        orientation = {orientation}
       />
     </div>
   );
 }
-
-function CustomChessboard({ setLastMove, setTurn, turn, game, setGame, onChildStateChange }) {
+//{ setLastMove, setTurn, turn, game, setGame, onChildStateChange, moves, orientation }
+function CustomChessboard({ setLastMove, setTurn, turn, game, setGame, onChildStateChange, moves, orientation }) {
   const [squareStyles, setSquareStyles] = useState({});
   const [sourceSquare, setSourceSquare] = useState(null);
+  const [movesArray, setMovesArray] = useState(moves.split(" "));
+  
+  useEffect(() => {
+    setTimeout(() => {
+      makeAMove({from: movesArray[0].substring(0, 2), to: movesArray[0].substring(2,4)}, true);
+    },500);
+    console.log("after initial moves", movesArray);
+  }, [])
+  
 
-  function makeAMove(move) {
-    const gameCopy = new Chess(game.fen());
+  function makeAMove(move, isInitialMove = false) {
+    let gameCopy = new Chess(game.fen());
     
-    const result = gameCopy.move(move);
+    let result = gameCopy.move(move);
     setGame(gameCopy);
     onChildStateChange(gameCopy);
     if (result != null) {
-      setLastMove(result.san);
-      setTurn(turn === "w" ? "b" : "w");
+      //setLastMove(result.san);
+      setTurn(game.turn());
     }
+    //incorrect move in puzzle
+    if (move.from !== movesArray[0].substring(0, 2) || move.to !== movesArray[0].substring(2, 4)){
+      console.log("incorrect move")
+      console.log(move.from);
+      console.log(movesArray[0].substring(0, 2));
+      console.log(move.to);
+      console.log(movesArray[0].substring(2, 4));
+      gameCopy = new Chess(game.fen());
+      result = gameCopy.undo();
+      setTimeout(() => setGame(gameCopy), 500);
+      return result;
+    }
+    console.log("initial move was correct");
+    let movesArrayCopy = movesArray;
+    movesArrayCopy.shift();
+    setMovesArray(movesArrayCopy);
+    console.log(movesArray);
+
+    if (!isInitialMove & movesArray.length > 0){
+      console.log("making response for other side");
+      console.log(movesArray[0]);
+      gameCopy.move({from: movesArray[0].substring(0, 2), to: movesArray[0].substring(2,4)});
+      setGame(gameCopy)
+      movesArrayCopy.shift();
+      setMovesArray(movesArrayCopy);
+      console.log("after making response for other side", movesArray);
+    }
+
     return result;
   }
 
@@ -127,7 +167,7 @@ function CustomChessboard({ setLastMove, setTurn, turn, game, setGame, onChildSt
           : undefined,
     });
   }
-
+  
   return (
     <Chessboard
       position={game.fen()}
@@ -135,6 +175,7 @@ function CustomChessboard({ setLastMove, setTurn, turn, game, setGame, onChildSt
       onSquareClick={onSquareClick}
       onSquareRightClick={onSquareRightClick}
       customSquareStyles={squareStyles}
+      boardOrientation={orientation}
     />
   );
 }
@@ -142,7 +183,7 @@ function CustomChessboard({ setLastMove, setTurn, turn, game, setGame, onChildSt
 function App() {
   return (
     <div class="chessboard-div">
-      <PuzzleSolver />
+      <PuzzleSolver fen = "r4rk1/pbq1nppp/1p2p3/4P1B1/8/2PB4/P3QPPP/R3R1K1 w - - 1 17" moves = "d3h7 g8h7 e2h5 h7g8 g5e7 c7e7"/>
     </div>
   );
 }
