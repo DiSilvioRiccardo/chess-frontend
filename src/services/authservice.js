@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = "http://localhost:8000/api/auth/";
+const API_URL = "http://localhost:8000/auth/";
 
 const register = (username, email, password) => {
   return axios.post(API_URL + "signup", {
@@ -10,18 +10,23 @@ const register = (username, email, password) => {
   });
 };
 
-const login = (username, password) => {
+const login = async (username, password) => {
   return axios
-    .post(API_URL + "signin", {
+    .post(API_URL + "login", {
       username,
       password,
     })
     .then((response) => {
-      if (response.data.username) {
-        localStorage.setItem("user", JSON.stringify(response.data));
-      }
-
+      console.log("sucess proceeding to set token")
+      console.log(response.data.token)
+      localStorage.setItem("user", JSON.stringify(response.data));
+      localStorage.setItem("token", JSON.stringify(response.data.token));
+      localStorage.setItem("user", JSON.stringify(username));
       return response.data;
+    })
+    .catch((error) => {
+      console.log(error);
+      throw error;
     });
 };
 
@@ -33,7 +38,15 @@ const logout = () => {
 };
 
 const getCurrentUser = () => {
-  return JSON.parse(localStorage.getItem("user"));
+  const token = JSON.parse(localStorage.getItem("token"));
+  return axios.post(API_URL + "validate", {
+    token,
+  }).then((response) => {
+    return response.body.username;
+  }).catch((error) => {
+    console.log(error);
+    throw error;
+  });
 };
 
 const AuthService = {

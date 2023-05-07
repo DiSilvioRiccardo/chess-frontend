@@ -1,8 +1,9 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import Form from "react-validation/build/form";
 import Input from "react-validation/build/input";
 import CheckButton from "react-validation/build/button";
 import { isEmail } from "validator";
+import { useNavigate } from 'react-router-dom';
 
 import AuthService from "../services/authservice";
 
@@ -49,12 +50,15 @@ const vpassword = (value) => {
 const Register = (props) => {
   const form = useRef();
   const checkBtn = useRef();
+  const navigate = useNavigate();
 
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [successful, setSuccessful] = useState(false);
-  const [message, setMessage] = useState("");
+  const [message, setMessage] = useState("test");
+  const [shouldRedirect, setShouldRedirect] = useState(false);
+  
 
   const onChangeUsername = (e) => {
     const username = e.target.value;
@@ -82,23 +86,40 @@ const Register = (props) => {
     if (checkBtn.current.context._errors.length === 0) {
       AuthService.register(username, email, password).then(
         (response) => {
-          setMessage(response.data.message);
-          setSuccessful(true);
+          if(response.data.result === "user created") {
+            setMessage("El usuario ha sido creado correctamente., puede iniciar sesión con el mismo");
+            setSuccessful(true);
+          }
         },
         (error) => {
           const resMessage =
             (error.response &&
               error.response.data &&
-              error.response.data.message) ||
-            error.message ||
+              error.response.data.result) ||
+            error.result ||
             error.toString();
-
-          setMessage(resMessage);
+          if(resMessage === "user already exists") {
+            setMessage("El usuario ya existe, por favor intente con otro");
+          } else if(resMessage === "email already exists") {
+            setMessage("El correo ya existe, por favor intente con otro");
+          } else {
+            setMessage("Ha ocurrido un error, por favor intente más tarde");
+          }
           setSuccessful(false);
         }
       );
     }
   };
+  
+  useEffect(() => {
+
+    if (successful) {
+      setTimeout(() => {
+        navigate('/login');
+      }, 5000);
+    }
+
+  }, [successful, navigate]);
 
   return (
     <div className="col-md-12">
@@ -172,6 +193,5 @@ const Register = (props) => {
     </div>
   );
 };
-
 
 export default Register;
