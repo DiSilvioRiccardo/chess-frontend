@@ -56,7 +56,7 @@ const Login = () => {
       AuthService.login(username, password).then(
         () => {
           setAuth(true);
-          navigate("/home");
+          navigate("/chessboard");
           window.location.reload();
         },
         (error) => {
