@@ -3,15 +3,17 @@ import { Chessboard } from "react-chessboard";
 import { useState, useEffect, useRef } from "react";
 import Chess from "chess.js";
 
+import PuzzleService from "../../services/puzzleservice";
+
 function PuzzleSolver(props) {
   const [lastMove, setLastMove] = useState("");
   const [turn, setTurn] = useState(props.fen.split(" ")[1] === "w" ? "b" : "w");
   const [game, setGame] = useState(new Chess(props.fen));
   const [puzzleSolved, setPuzzleSolved] = useState(false);
   const [tries, setTries] = useState(0);
-  const orientation = props.fen.split(" ")[1] === "w" ? "black" : "white"
+  const orientation = props.fen.split(" ")[1] === "w" ? "black" : "white";
 
-  function increaseTries(){
+  function increaseTries() {
     setTries(tries + 1);
   }
 
@@ -41,25 +43,40 @@ function PuzzleSolver(props) {
         setLastMove={setLastMove}
         setTurn={setTurn}
         turn={turn}
-        game = {game}
-        setGame = {setGame}
+        game={game}
+        setGame={setGame}
         onChildStateChange={handleChildStateChange}
-        moves = {props.moves}
-        orientation = {orientation}
-        increaseTries = {increaseTries}
-        setPuzzleSolved = {setPuzzleSolved}
+        moves={props.moves}
+        orientation={orientation}
+        increaseTries={increaseTries}
+        setPuzzleSolved={setPuzzleSolved}
       />
-      <p>{tries} {puzzleSolved.toString()}</p>
+      <p>
+        {tries} {puzzleSolved.toString()}
+      </p>
     </div>
   );
 }
 //{ setLastMove, setTurn, turn, game, setGame, onChildStateChange, moves, orientation }
-function CustomChessboard({ setLastMove, setTurn, turn, game, setGame, onChildStateChange, moves, orientation, setPuzzleSolved, increaseTries }) {
+function CustomChessboard({
+  setLastMove,
+  setTurn,
+  turn,
+  game,
+  setGame,
+  onChildStateChange,
+  moves,
+  orientation,
+  setPuzzleSolved,
+  increaseTries,
+}) {
   const [squareStyles, setSquareStyles] = useState({});
   const [sourceSquare, setSourceSquare] = useState(null);
   const [movesArray, setMovesArray] = useState(moves.split(" "));
+
   let inputElement = useRef();
-  let chessboard = 
+
+  let chessboard = (
     <Chessboard
       position={game.fen()}
       onPieceDrop={onDrop}
@@ -67,52 +84,69 @@ function CustomChessboard({ setLastMove, setTurn, turn, game, setGame, onChildSt
       onSquareRightClick={onSquareRightClick}
       customSquareStyles={squareStyles}
       boardOrientation={orientation}
-    />;
+    />
+  );
 
   useEffect(() => {
     setTimeout(() => {
-      makeAMove({from: movesArray[0].substring(0, 2), to: movesArray[0].substring(2,4)}, true);
-    },500);
+      makeAMove(
+        {
+          from: movesArray[0].substring(0, 2),
+          to: movesArray[0].substring(2, 4),
+        },
+        true
+      );
+    }, 500);
     console.log("after initial moves", movesArray);
-  }, [])
-  
+  }, []);
 
   function makeAMove(move, isInitialMove = false) {
     let gameCopy = new Chess(game.fen());
-    
+
     let result = gameCopy.move(move);
     setGame(gameCopy);
     onChildStateChange(gameCopy);
-    if (result != null & !isInitialMove){
+
+    if ((result != null) & !isInitialMove) {
       setLastMove(result.san);
     }
+
     //incorrect move in puzzle
-    if (move.from !== movesArray[0].substring(0, 2) || move.to !== movesArray[0].substring(2, 4)){
-      console.log("incorrect move")
+    if (
+      move.from !== movesArray[0].substring(0, 2) ||
+      move.to !== movesArray[0].substring(2, 4)
+    ) {
+      console.log("incorrect move");
       console.log(move.from);
       console.log(movesArray[0].substring(0, 2));
       console.log(move.to);
       console.log(movesArray[0].substring(2, 4));
-      result != null ? increaseTries() : console.log("null result, not increasing tries");
+      result != null
+        ? increaseTries()
+        : console.log("null result, not increasing tries");
       gameCopy = new Chess(game.fen());
       result = gameCopy.undo();
       setTimeout(() => setGame(gameCopy), 500);
       return result;
     }
+
     let movesArrayCopy = movesArray;
     movesArrayCopy.shift();
     setMovesArray(movesArrayCopy);
     console.log(movesArray);
 
-    if (!isInitialMove & movesArray.length > 0){
+    if (!isInitialMove & (movesArray.length > 0)) {
       console.log("making response for other side");
       console.log(movesArray[0]);
-      gameCopy.move({from: movesArray[0].substring(0, 2), to: movesArray[0].substring(2,4)});
+      gameCopy.move({
+        from: movesArray[0].substring(0, 2),
+        to: movesArray[0].substring(2, 4),
+      });
       setGame(gameCopy);
       movesArrayCopy.shift();
       setMovesArray(movesArrayCopy);
       console.log("after making response for other side", movesArray);
-    }else if (movesArray.length === 0){
+    } else if (movesArray.length === 0) {
       setPuzzleSolved(true);
     }
     return result;
@@ -133,7 +167,7 @@ function CustomChessboard({ setLastMove, setTurn, turn, game, setGame, onChildSt
   }
 
   function onSquareClick(square) {
-    if (square == null){
+    if (square == null) {
       setSourceSquare(null);
     }
     setSquareStyles({});
@@ -187,19 +221,39 @@ function CustomChessboard({ setLastMove, setTurn, turn, game, setGame, onChildSt
           : undefined,
     });
   }
-  
+
   return chessboard;
 }
 
-
-function ResultsContainer(){
-
-}
+function ResultsContainer() {}
 
 function App() {
+  const [loading, setLoading] = useState(true);
+  const [game, setGame] = useState(null);
+  const [moves, setMoves] = useState(null);
+
+  const requestPuzzle = async () => {
+    const response = await PuzzleService.getPuzzle();
+    console.log(response)
+
+    setGame(response.fen);
+    setMoves(response.moves);
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    requestPuzzle();
+  }, []);
+
   return (
     <div class="chessboard-div">
-      <PuzzleSolver fen = "r4rk1/pbq1nppp/1p2p3/4P1B1/8/2PB4/P3QPPP/R3R1K1 w - - 1 17" moves = "d3h7 g8h7 e2h5 h7g8 g5e7 c7e7"/>
+      {loading ? (
+        <div class="loading">
+          <span>Loading...</span>
+        </div>
+      ) : (
+        <PuzzleSolver fen={game} moves={moves} />
+      )}
     </div>
   );
 }

@@ -5,7 +5,7 @@ import CheckButton from "react-validation/build/button";
 import { isEmail } from "validator";
 import { useNavigate } from 'react-router-dom';
 
-import AuthService from "../services/authservice";
+import AuthService from "../../services/authservice";
 
 const required = (value) => {
   if (!value) {
@@ -57,7 +57,6 @@ const Register = (props) => {
   const [password, setPassword] = useState("");
   const [successful, setSuccessful] = useState(false);
   const [message, setMessage] = useState("test");
-  const [shouldRedirect, setShouldRedirect] = useState(false);
   
 
   const onChangeUsername = (e) => {

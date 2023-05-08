@@ -1,9 +1,10 @@
-.App {
-  text-align: center;
-  background-color: #f7f7f7;
+.chessboard-container {
   display: flex;
   justify-content: center;
   align-items: center;
+  flex-direction: column;
+  margin-top: 50px;
+  position: relative;
 }
 
 .chessboard-div {

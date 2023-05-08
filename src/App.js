@@ -1,82 +1,103 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { Routes, Route, Link, useNavigate } from "react-router-dom";
-import "bootstrap/dist/css/bootstrap.min.css";
+
+import { useAuth } from "./common/authHook";
+import Login from "./components/login/login";
+import Register from "./components/register/register";
+import Chessboard from "./components/chess/chess";
 import "./App.css";
 
-import AuthService from "./services/authservice";
-import { useAuth } from "./common/authHook";
-
-import Login from "./components/login";
-import Register from "./components/register";
-import Chessboard from "./components/chess/chess";
-import Home from "./components/home/home";
-// import AuthVerify from "./common/AuthVerify";
-
 const App = () => {
-
-  const { setAuth,user } = useAuth();
+  const { setAuth, user } = useAuth();
   const navigate = useNavigate();
 
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     setAuth();
-    navigate("/login")
+    navigate("/login");
   };
 
   return (
     <div>
-      <nav className="navbar navbar-expand navbar-dark bg-dark">
-        <Link to={"/"} className="navbar-brand">
-          chess
-        </Link>
-        <div className="navbar-nav mr-auto">
-          <li className="nav-item">
-            <Link to={"/home"} className="nav-link">
-              Home
-            </Link>
-          </li>
-        </div>
-
-        <div className="navbar-nav ml-auto">
+      <header class="header">
+        <a class="logo" href=".page-top">
+          Estudio de la aplicación de aprendizaje de ajedrez en la competencia
+          cognitiva
+        </a>
+        <input class="menu-btn" type="checkbox" id="menu-btn" />
+        <label class="menu-icon" for="menu-btn">
+          <span class="navicon"></span>
+        </label>
+        <ul class="menu">
+          {/* eslint-disable */}
           {user ? (
             <>
-             <li className="nav-item nav-link">{user}</li>
-             <button className="btn btn-primary" onClick={handleLogout}>Logout</button>
+              <li>
+                <a href="#one" class="link link-theme link-arrow">
+                  {user}
+                </a>
+              </li>
+              <li>
+                <a class="link link-theme link-arrow" onClick={handleLogout}>
+                  Cerrar Sesion
+                </a>
+              </li>
             </>
           ) : (
             <>
-              <li className="nav-item">
-                <Link to={"/login"} className="nav-link">
-                  Login
+              <li>
+                <Link to={"/login"} className="link link-theme link-arrow">
+                  Inicia Sesion
                 </Link>
               </li>
-
-              <li className="nav-item">
-                <Link to={"/register"} className="nav-link">
-                  Sign Up
+              <li>
+                <Link to={"/register"} className="link link-theme link-arrow">
+                  Registrate
                 </Link>
               </li>
             </>
           )}
+        </ul>
+        {/* eslint-enable */}
+      </header>
+      <div>
+        <div id="main" class="main">
+          <div className="container">
+            <Routes>
+              <Route exact path={"/"} element={<Login />} />
+              <Route exact path="/login" element={<Login />} />
+              <Route exact path="/register" element={<Register />} />
+              <Route exact path="/chessboard" element={<Chessboard />} />
+            </Routes>
+          </div>
+
+          <footer class="footer">
+            <div class="container">
+              <hr />
+              <article class="foot-content-left">
+                <ul>Made with ❤️ by Ivan Perez and Riccado Di Silvio</ul>
+              </article>
+
+              {/* eslint-disable */}
+              <article class="foot-content">
+                <ul>
+                  <li class="social">
+                    <a href="">Universidad del Norte</a>
+                  </li>
+                  <li class="social">
+                    <a href="">Barranquilla</a>
+                  </li>
+                  <li class="social">
+                    <a href="">Atlantico</a>
+                  </li>
+                </ul>
+              </article>
+              {/* eslint-enable */}
+            </div>
+          </footer>
         </div>
-      </nav>
-
-      <div className="container-fluid">
-        <Routes>
-          <Route exact path={"/home"} element={<Home />} />
-        </Routes>
       </div>
-      <div className="container mt-3">
-        <Routes>
-          <Route exact path={"/"} element={<Login />} />
-          <Route exact path="/login" element={<Login />} />
-          <Route exact path="/register" element={<Register />} />
-          <Route exact path="/Chessboard" element={<Chessboard />} />
-        </Routes>
-      </div>
-
-      {/* <AuthVerify logOut={logOut}/> */}
     </div>
   );
 };
