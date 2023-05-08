@@ -4,7 +4,7 @@ const API_URL = "http://localhost:8000/puzzles/";
 
 const config = {
   headers: {
-    Authorization: JSON.parse(localStorage.getItem("token")),
+    Authorization: "Token "+JSON.parse(localStorage.getItem("token")),
   },
 };
 
@@ -22,9 +22,13 @@ const getPuzzle = () => {
 
 const SendPuzzleResult = (result) => {
   return axios
-    .post(API_URL, config, {
-      result,
-    })
+    .post(
+      API_URL,
+      {
+        result,
+      },
+      config
+    )
     .then((response) => {
       return response.data;
     })
