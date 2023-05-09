@@ -1,6 +1,7 @@
 import "./chess.css";
 import { Chessboard } from "react-chessboard";
 import { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import Grid from "@mui/material/Unstable_Grid2";
 import Box from "@mui/material/Box";
 import Alert from "@mui/material/Alert";
@@ -10,6 +11,7 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import Button from "@mui/material/Button";
 
 import Chess from "chess.js";
+import { useAuth } from "../../common/authHook";
 
 import PuzzleService from "../../services/puzzleservice";
 
@@ -334,6 +336,9 @@ function App() {
   const [game, setGame] = useState(null);
   const [moves, setMoves] = useState(null);
 
+  const { auth } = useAuth();
+  const navigate = useNavigate();
+
   const requestPuzzle = async () => {
     const response = await PuzzleService.getPuzzle();
     console.log(response);
@@ -343,20 +348,36 @@ function App() {
     setLoading(false);
   };
 
+  const redirectToLogin = () => {
+    navigate("/login");
+  };
+
   useEffect(() => {
     requestPuzzle();
   }, []);
 
   return (
-    <div class="chessboard-div">
-      <Backdrop
-        sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
-        open={loading}
-      >
-        <CircularProgress color="inherit" />
-      </Backdrop>
-      {loading ? null : <PuzzleSolver fen={game} moves={moves} />}
-    </div>
+    <>
+      {auth ? (
+        <div class="chessboard-div">
+          <Backdrop
+            sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
+            open={loading}
+          >
+            <CircularProgress color="inherit" />
+          </Backdrop>
+          {loading ? null : <PuzzleSolver fen={game} moves={moves} />}
+        </div>
+      ) : (
+        <Backdrop
+          sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
+          open={true}
+          onClick={redirectToLogin}
+        >
+          Need to be logged in to see this page
+        </Backdrop>
+      )}
+    </>
   );
 }
 export default App;
