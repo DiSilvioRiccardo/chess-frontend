@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import Form from "react-validation/build/form";
 import Input from "react-validation/build/input";
 import CheckButton from "react-validation/build/button";
+import Alert from "@mui/material/Alert";
 import { isEmail } from "validator";
 import { useNavigate } from "react-router-dom";
 import "./register.css";
@@ -53,7 +54,7 @@ const Register = (props) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [successful, setSuccessful] = useState(false);
-  const [message, setMessage] = useState("test");
+  const [message, setMessage] = useState("");
 
   const onChangeUsername = (e) => {
     const username = e.target.value;
@@ -163,12 +164,25 @@ const Register = (props) => {
                 <label for="email" class="login-input-icon">
                   <i class="fa fa-user"></i>
                 </label>
-                <CheckButton ref={checkBtn}>Register</CheckButton>
+                <CheckButton ref={checkBtn}>Register </CheckButton>
                 <span class="login-separator"></span>
+                <div class="login-alert" style={{ marginTop: "10px" }}>
+                  {message && (
+                    <Alert severity={successful ? "success" : "error"}>
+                      {message}
+                    </Alert>
+                  )}
+                </div>
               </div>
             </div>
           </div>
         </Form>
+        <div
+          class="Alert"
+          style={{
+            marginTop: "40px",
+          }}
+        ></div>
       </div>
     </>
   );
