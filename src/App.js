@@ -5,6 +5,7 @@ import { useAuth } from "./common/authHook";
 import Login from "./components/login/login";
 import Register from "./components/register/register";
 import Chessboard from "./components/chess/chess";
+import Form from "./components/form";
 import "./App.css";
 
 const App = () => {
@@ -21,7 +22,7 @@ const App = () => {
   return (
     <div>
       <header class="header">
-        <a class="logo" href=".page-top">
+        <a class="logo" href="/form">
           Estudio de la aplicación de aprendizaje de ajedrez en la competencia
           cognitiva
         </a>
@@ -67,6 +68,7 @@ const App = () => {
             <Routes>
               <Route exact path={"/"} element={<Login />} />
               <Route exact path="/login" element={<Login />} />
+              <Route exact path="/form" element={<Form />} />
               <Route exact path="/register" element={<Register />} />
               <Route exact path="/chessboard" element={<Chessboard />} />
             </Routes>

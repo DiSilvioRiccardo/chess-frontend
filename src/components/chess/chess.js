@@ -1,6 +1,14 @@
 import "./chess.css";
 import { Chessboard } from "react-chessboard";
 import { useState, useEffect, useRef } from "react";
+import Grid from "@mui/material/Unstable_Grid2";
+import Box from "@mui/material/Box";
+import Alert from "@mui/material/Alert";
+import Backdrop from "@mui/material/Backdrop";
+import CircularProgress from "@mui/material/CircularProgress";
+import { createTheme, ThemeProvider } from "@mui/material/styles";
+import Button from "@mui/material/Button";
+
 import Chess from "chess.js";
 
 import PuzzleService from "../../services/puzzleservice";
@@ -22,39 +30,127 @@ function PuzzleSolver(props) {
   };
 
   const handleNewGameClick = () => {
-    setGame(new Chess(props.fen));
-    setLastMove("");
+    window.location.reload(false);
   };
 
+  const myTheme = createTheme({
+    palette: {
+      black: {
+        main: "#000000",
+        light: "#000000",
+        secondary: "#FFFFFF",
+      },
+      white: {
+        main: "#FFFFFF",
+        light: "#FFFFFF",
+        secondary: "#000000",
+      },
+    },
+  });
+
   return (
-    <div className="chessboard-container">
-      <p>{lastMove}</p>
-      {game.in_checkmate() ? (
-        <div class="checkmate">
-          <span>Checkmate!</span>
-        </div>
-      ) : null}
-      <div className="new-game-button-container">
-        <button className="new-game-button" onClick={handleNewGameClick}>
-          New Game
-        </button>
-      </div>
-      <CustomChessboard
-        setLastMove={setLastMove}
-        setTurn={setTurn}
-        turn={turn}
-        game={game}
-        setGame={setGame}
-        onChildStateChange={handleChildStateChange}
-        moves={props.moves}
-        orientation={orientation}
-        increaseTries={increaseTries}
-        setPuzzleSolved={setPuzzleSolved}
-      />
-      <p>
-        {tries} {puzzleSolved.toString()}
-      </p>
-    </div>
+    <Grid container spacing={2} sx={{ mt: "5%" }}>
+      <Grid item xs={4}>
+        <Grid container direction={"column"} spacing={2}>
+          <Grid item xs={2}>
+            <ThemeProvider theme={myTheme}>
+              {game.turn() === "b" ? (
+                <Alert variant="filled" severity="success" color="black">
+                  Le tocan a las negras!
+                </Alert>
+              ) : (
+                <Alert variant="outlined" severity="info">
+                  Le tocan a las blancas!
+                </Alert>
+              )}
+            </ThemeProvider>
+          </Grid>
+          <Grid item xs={2}>
+            {puzzleSolved ? (
+              <Alert variant="outlined" severity="success">
+                Puzzle Resuelto!, Intentos fallidos: {tries}
+              </Alert>
+            ) : null}
+          </Grid>
+          <Grid item xs={2}>
+            <Alert variant="filled" severity="info">
+              Movimiento reciente: {lastMove}
+            </Alert>
+          </Grid>
+          <Grid item xs={2}>
+            {game.in_checkmate() ? (
+              <Alert variant="outlined" severity="error">
+                Checkmate!
+              </Alert>
+            ) : null}
+          </Grid>
+          <Grid item xs={2}>
+            {game.in_draw() ? (
+              <Alert severity="success" color="info">
+                Empate!
+              </Alert>
+            ) : null}
+          </Grid>
+          <Grid item xs={2}>
+            {game.in_stalemate() ? (
+              <Alert severity="success" color="info">
+                Stalemate!
+              </Alert>
+            ) : null}
+          </Grid>
+          <Grid item xs={2}>
+            <Alert variant="outlined" severity="success">
+              Movimientos intentado: {tries}
+            </Alert>
+          </Grid>
+          <Grid item xs={2}>
+            <div className="new-game-button-container">
+              <Button
+                variant="contained"
+                color="success"
+                onClick={handleNewGameClick}
+              >
+                New Game
+              </Button>
+            </div>
+          </Grid>
+        </Grid>
+      </Grid>
+      <Grid
+        item
+        xs={8}
+        sx={{
+          backgroundColor: "#000000",
+          display: "flex",
+          flexWrap: "wrap",
+          justifyContent: "center",
+          alignItems: "center",
+          padding: "30px",
+          width: "600px",
+          height: "600px",
+        }}
+      >
+        <Box
+          sx={{
+            width: "100%",
+            height: "100%",
+          }}
+        >
+          <CustomChessboard
+            setLastMove={setLastMove}
+            setTurn={setTurn}
+            turn={turn}
+            game={game}
+            setGame={setGame}
+            onChildStateChange={handleChildStateChange}
+            moves={props.moves}
+            orientation={orientation}
+            increaseTries={increaseTries}
+            setPuzzleSolved={setPuzzleSolved}
+          />
+        </Box>
+      </Grid>
+    </Grid>
   );
 }
 //{ setLastMove, setTurn, turn, game, setGame, onChildStateChange, moves, orientation }
@@ -101,9 +197,15 @@ function CustomChessboard({
   }, []);
 
   function makeAMove(move, isInitialMove = false) {
+    if (movesArray.length === 0) {
+      setPuzzleSolved(true);
+      return;
+    }
+
     let gameCopy = new Chess(game.fen());
 
     let result = gameCopy.move(move);
+
     setGame(gameCopy);
     onChildStateChange(gameCopy);
 
@@ -234,7 +336,7 @@ function App() {
 
   const requestPuzzle = async () => {
     const response = await PuzzleService.getPuzzle();
-    console.log(response)
+    console.log(response);
 
     setGame(response.fen);
     setMoves(response.moves);
@@ -247,13 +349,13 @@ function App() {
 
   return (
     <div class="chessboard-div">
-      {loading ? (
-        <div class="loading">
-          <span>Loading...</span>
-        </div>
-      ) : (
-        <PuzzleSolver fen={game} moves={moves} />
-      )}
+      <Backdrop
+        sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={loading}
+      >
+        <CircularProgress color="inherit" />
+      </Backdrop>
+      {loading ? null : <PuzzleSolver fen={game} moves={moves} />}
     </div>
   );
 }
