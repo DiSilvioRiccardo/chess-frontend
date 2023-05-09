@@ -163,7 +163,7 @@ const Register = (props) => {
                 <label for="email" class="login-input-icon">
                   <i class="fa fa-user"></i>
                 </label>
-                <CheckButton ref={checkBtn}>Login </CheckButton>
+                <CheckButton ref={checkBtn}>Register</CheckButton>
                 <span class="login-separator"></span>
               </div>
             </div>
