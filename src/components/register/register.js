@@ -2,17 +2,17 @@ import React, { useState, useRef, useEffect } from "react";
 import Form from "react-validation/build/form";
 import Input from "react-validation/build/input";
 import CheckButton from "react-validation/build/button";
+import Alert from "@mui/material/Alert";
 import { isEmail } from "validator";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
+import "./register.css";
 
 import AuthService from "../../services/authservice";
 
 const required = (value) => {
   if (!value) {
     return (
-      <div className="invalid-feedback d-block">
-        This field is required!
-      </div>
+      <div className="invalid-feedback d-block">This field is required!</div>
     );
   }
 };
@@ -20,9 +20,7 @@ const required = (value) => {
 const validEmail = (value) => {
   if (!isEmail(value)) {
     return (
-      <div className="invalid-feedback d-block">
-        This is not a valid email.
-      </div>
+      <div className="invalid-feedback d-block">This is not a valid email.</div>
     );
   }
 };
@@ -56,8 +54,7 @@ const Register = (props) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [successful, setSuccessful] = useState(false);
-  const [message, setMessage] = useState("test");
-  
+  const [message, setMessage] = useState("");
 
   const onChangeUsername = (e) => {
     const username = e.target.value;
@@ -85,8 +82,10 @@ const Register = (props) => {
     if (checkBtn.current.context._errors.length === 0) {
       AuthService.register(username, email, password).then(
         (response) => {
-          if(response.data.result === "user created") {
-            setMessage("El usuario ha sido creado correctamente., puede iniciar sesión con el mismo");
+          if (response.data.result === "user created") {
+            setMessage(
+              "El usuario ha sido creado correctamente., puede iniciar sesión con el mismo"
+            );
             setSuccessful(true);
           }
         },
@@ -97,9 +96,9 @@ const Register = (props) => {
               error.response.data.result) ||
             error.result ||
             error.toString();
-          if(resMessage === "user already exists") {
+          if (resMessage === "user already exists") {
             setMessage("El usuario ya existe, por favor intente con otro");
-          } else if(resMessage === "email already exists") {
+          } else if (resMessage === "email already exists") {
             setMessage("El correo ya existe, por favor intente con otro");
           } else {
             setMessage("Ha ocurrido un error, por favor intente más tarde");
@@ -109,87 +108,83 @@ const Register = (props) => {
       );
     }
   };
-  
-  useEffect(() => {
 
+  useEffect(() => {
     if (successful) {
       setTimeout(() => {
-        navigate('/login');
+        navigate("/login");
       }, 5000);
     }
-
   }, [successful, navigate]);
 
   return (
-    <div className="col-md-12">
-      <div className="card card-container">
-        <img
-          src="//ssl.gstatic.com/accounts/ui/avatar_2x.png"
-          alt="profile-img"
-          className="profile-img-card"
-        />
-
+    <>
+      <div class="login-container">
         <Form onSubmit={handleRegister} ref={form}>
-          {!successful && (
-            <div>
-              <div className="form-group">
-                <label htmlFor="username">Username</label>
+          <div class="container-login">
+            <div class="login-box">
+              <div class="login">
+                <h1>Registro</h1>
                 <Input
+                  id="username"
                   type="text"
-                  className="form-control"
+                  placeholder="Username"
                   name="username"
                   value={username}
                   onChange={onChangeUsername}
-                  validations={[required, vusername]}
+                  validations={[required]}
+                  style={{ width: "88%" }}
                 />
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="email">Email</label>
+                <label for="username" class="login-input-icon">
+                  <i class="fa fa-user"></i>
+                </label>
                 <Input
-                  type="text"
-                  className="form-control"
-                  name="email"
-                  value={email}
-                  onChange={onChangeEmail}
-                  validations={[required, validEmail]}
-                />
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="password">Password</label>
-                <Input
+                  id="password"
                   type="password"
-                  className="form-control"
+                  placeholder="Password"
                   name="password"
                   value={password}
                   onChange={onChangePassword}
-                  validations={[required, vpassword]}
+                  validations={[required]}
+                  style={{ width: "88%" }}
                 />
-              </div>
-
-              <div className="form-group">
-                <button className="btn btn-primary btn-block">Sign Up</button>
+                <label for="password" class="login-input-icon">
+                  <i class="fa fa-lock"></i>
+                </label>
+                <Input
+                  id="email"
+                  type="text"
+                  placeholder="Email"
+                  name="email"
+                  value={email}
+                  onChange={onChangeEmail}
+                  style={{ width: "88%" }}
+                  validations={[required, validEmail]}
+                />
+                <label for="email" class="login-input-icon">
+                  <i class="fa fa-user"></i>
+                </label>
+                <CheckButton ref={checkBtn}>Register </CheckButton>
+                <span class="login-separator"></span>
+                <div class="login-alert" style={{ marginTop: "10px" }}>
+                  {message && (
+                    <Alert severity={successful ? "success" : "error"}>
+                      {message}
+                    </Alert>
+                  )}
+                </div>
               </div>
             </div>
-          )}
-
-          {message && (
-            <div className="form-group">
-              <div
-                className={
-                  successful ? "alert alert-success" : "alert alert-danger"
-                }
-                role="alert"
-              >
-                {message}
-              </div>
-            </div>
-          )}
-          <CheckButton style={{ display: "none" }} ref={checkBtn} />
+          </div>
         </Form>
+        <div
+          class="Alert"
+          style={{
+            marginTop: "40px",
+          }}
+        ></div>
       </div>
-    </div>
+    </>
   );
 };
 
