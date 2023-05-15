@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = "http://localhost:8000/puzzles/";
+const API_URL = "http://web:8000/puzzles/";
 
 const config = {
   headers: {
