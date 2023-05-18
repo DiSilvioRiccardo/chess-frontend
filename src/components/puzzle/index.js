@@ -17,8 +17,8 @@ function Puzzle() {
   const [loading, setLoading] = useState(true);
   const [puzzle, setPuzzle] = useState({});
 
-  const [isLogic, setIsLogic] = useState(true);
-  const [didForm, setDidForm] = useState(true);
+  const [isLogic, setIsLogic] = useState(false);
+  const [didForm, setDidForm] = useState(false);
 
   const navigate = useNavigate();
 
