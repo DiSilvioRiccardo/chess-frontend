@@ -2,10 +2,9 @@ import React from "react";
 import { Routes, Route, Link, useNavigate } from "react-router-dom";
 
 import { useAuth } from "./common/authHook";
-import Login from "./components/login/login";
-import Register from "./components/register/register";
-import Chessboard from "./components/chess/chess";
-import Form from "./components/form";
+import Login from "./components/auth/login/login";
+import Register from "./components/auth/register/register";
+import Puzzle from "./components/puzzle";
 import "./App.css";
 
 const App = () => {
@@ -68,9 +67,8 @@ const App = () => {
             <Routes>
               <Route exact path={"/"} element={<Login />} />
               <Route exact path="/login" element={<Login />} />
-              <Route exact path="/form" element={<Form />} />
               <Route exact path="/register" element={<Register />} />
-              <Route exact path="/chessboard" element={<Chessboard />} />
+              <Route exact path="/puzzle" element={<Puzzle />} />
             </Routes>
           </div>
 

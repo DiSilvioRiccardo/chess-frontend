@@ -7,7 +7,7 @@ import { isEmail } from "validator";
 import { useNavigate } from "react-router-dom";
 import "./register.css";
 
-import AuthService from "../../services/authservice";
+import AuthService from "../../../services/authService";
 
 const required = (value) => {
   if (!value) {
@@ -113,7 +113,7 @@ const Register = (props) => {
     if (successful) {
       setTimeout(() => {
         navigate("/login");
-      }, 5000);
+      }, 3000);
     }
   }, [successful, navigate]);
 

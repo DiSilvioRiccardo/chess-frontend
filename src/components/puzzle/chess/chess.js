@@ -2,6 +2,8 @@ import "./chess.css";
 import { Chessboard } from "react-chessboard";
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import { useStopwatch } from "react-timer-hook";
+
 import Grid from "@mui/material/Unstable_Grid2";
 import Box from "@mui/material/Box";
 import Alert from "@mui/material/Alert";
@@ -11,9 +13,8 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import Button from "@mui/material/Button";
 
 import Chess from "chess.js";
-import { useAuth } from "../../common/authHook";
-
-import PuzzleService from "../../services/puzzleservice";
+import { useAuth } from "../../../common/authHook";
+import PuzzleService from "../../../services/puzzleservice";
 
 function PuzzleSolver(props) {
   const [lastMove, setLastMove] = useState("");
@@ -22,6 +23,8 @@ function PuzzleSolver(props) {
   const [puzzleSolved, setPuzzleSolved] = useState(false);
   const [tries, setTries] = useState(0);
   const orientation = props.fen.split(" ")[1] === "w" ? "black" : "white";
+  const { seconds, minutes, totalSeconds, pause } =
+    useStopwatch({ autoStart: true });
 
   function increaseTries() {
     setTries(tries + 1);
@@ -34,6 +37,23 @@ function PuzzleSolver(props) {
   const handleNewGameClick = () => {
     window.location.reload(false);
   };
+
+  const formatTime = (time) => {
+    return String(time).padStart(2, '0')
+  }
+
+  useEffect(() => {
+    if (puzzleSolved) {
+      pause();
+      const result = {
+        puzzleId: props.puzzleId,
+        time: totalSeconds,
+        tries: tries,
+      };
+      PuzzleService.SendChessPuzzleResult(result);
+      console.log(result);
+    }
+  }, [puzzleSolved]);
 
   const myTheme = createTheme({
     palette: {
@@ -77,6 +97,11 @@ function PuzzleSolver(props) {
           <Grid item xs={2}>
             <Alert variant="filled" severity="info">
               Movimiento reciente: {lastMove}
+            </Alert>
+          </Grid>
+          <Grid item xs={2}>
+            <Alert variant="filled" severity="info">
+             Tiempo transcurrido: {formatTime(minutes)}:{formatTime(seconds)}
             </Alert>
           </Grid>
           <Grid item xs={2}>
@@ -329,44 +354,24 @@ function CustomChessboard({
   return chessboard;
 }
 
-function ResultsContainer() {}
+function App(props) {
 
-function App() {
-  const [loading, setLoading] = useState(true);
-  const [game, setGame] = useState(null);
-  const [moves, setMoves] = useState(null);
+  const [game] = useState(props.fen);
+  const [moves] = useState(props.moves);
+  const [puzzleId] = useState(props.puzzleId);
 
   const { auth } = useAuth();
   const navigate = useNavigate();
-
-  const requestPuzzle = async () => {
-    const response = await PuzzleService.getPuzzle();
-    console.log(response);
-
-    setGame(response.fen);
-    setMoves(response.moves);
-    setLoading(false);
-  };
 
   const redirectToLogin = () => {
     navigate("/login");
   };
 
-  useEffect(() => {
-    requestPuzzle();
-  }, []);
-
   return (
     <>
       {auth ? (
         <div class="chessboard-div">
-          <Backdrop
-            sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
-            open={loading}
-          >
-            <CircularProgress color="inherit" />
-          </Backdrop>
-          {loading ? null : <PuzzleSolver fen={game} moves={moves} />}
+          <PuzzleSolver fen={game} moves={moves} puzzleId={puzzleId} />
         </div>
       ) : (
         <Backdrop

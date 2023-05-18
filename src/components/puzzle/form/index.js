@@ -1,10 +1,15 @@
 import React from "react";
 import { Routes, Route, Link, useNavigate } from "react-router-dom";
 import Box from "@mui/material/Box";
+import PuzzleService from "../../../services/puzzleservice";
 
 function Form() {
   const navigate = useNavigate();
   let afterInitialLoading = false;
+
+  function submitForm() {
+    PuzzleService.submitForm();
+  }
 
   function handleSubmmit(e) {
     if (afterInitialLoading) {
@@ -31,6 +36,7 @@ function Form() {
         marginheight="0"
         marginwidth="0"
         title="Formulario de Inicio"
+        scrolling="no"
         onLoad={handleSubmmit}
       >
         Cargando…

@@ -4,8 +4,8 @@ import Form from "react-validation/build/form";
 import Input from "react-validation/build/input";
 import CheckButton from "react-validation/build/button";
 
-import AuthService from "../../services/authservice";
-import { useAuth } from "../../common/authHook";
+import AuthService from "../../../services/authService";
+import { useAuth } from "../../../common/authHook";
 import "./login.css";
 
 const required = (value) => {
@@ -30,7 +30,7 @@ const Login = () => {
 
   const handleRedirectIfAuth = () => {
     if (auth) {
-      navigate("/chessboard");
+      navigate("/puzzle");
     }
   };
 
