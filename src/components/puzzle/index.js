@@ -29,6 +29,7 @@ function Puzzle() {
     } 
     setPuzzle(puzzle);
     console.log(puzzle);
+    setLoading(false);
   };
 
   const requestProfile = async () => {
@@ -40,8 +41,10 @@ function Puzzle() {
       setDidForm(true);
     } else if (response.did_1500_form) {
       setDidForm(true);
+    }else{
+      setLoading(false);
     }
-    setLoading(false);
+
   };
 
   const checkForm = () => {};
