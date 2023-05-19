@@ -70,7 +70,6 @@ function Quiz(props) {
   };
 
   const setCognitiveDevelopment = (rating) => {
-    console.log(rating);
     if (rating < 700) {
       return (
         <Alert variant="filled" severity="success">

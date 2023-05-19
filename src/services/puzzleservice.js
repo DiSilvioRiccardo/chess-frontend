@@ -44,9 +44,9 @@ const SendChessPuzzleResult = (result) => {
     });
 };
 
-const submitForm = () => {
-  const profile = getProfile();
-
+const submitForm = async () => {
+  const profile = await getProfile();
+  console.log(profile)
   if (!profile.did_initial_form) {
     const type = { type: 0 };
     return axios

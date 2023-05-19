@@ -46,7 +46,6 @@ function PuzzleSolver(props) {
   };
 
   const setCognitiveDevelopment = (rating) => {
-    console.log(rating);
     if (rating < 700) {
       return (
         <Alert variant="filled" severity="success">
@@ -78,7 +77,6 @@ function PuzzleSolver(props) {
         tries: tries,
       };
       PuzzleService.SendChessPuzzleResult(result);
-      console.log(result);
     }
   }, [puzzleSolved]);
 
@@ -253,7 +251,6 @@ function CustomChessboard({
         true
       );
     }, 500);
-    console.log("after initial moves", movesArray);
   }, []);
 
   function makeAMove(move, isInitialMove = false) {
@@ -278,11 +275,6 @@ function CustomChessboard({
       move.from !== movesArray[0].substring(0, 2) ||
       move.to !== movesArray[0].substring(2, 4)
     ) {
-      console.log("incorrect move");
-      console.log(move.from);
-      console.log(movesArray[0].substring(0, 2));
-      console.log(move.to);
-      console.log(movesArray[0].substring(2, 4));
       result != null
         ? increaseTries()
         : console.log("null result, not increasing tries");
@@ -295,7 +287,6 @@ function CustomChessboard({
     let movesArrayCopy = movesArray;
     movesArrayCopy.shift();
     setMovesArray(movesArrayCopy);
-    console.log(movesArray);
 
     if (!isInitialMove & (movesArray.length > 0)) {
       console.log("making response for other side");

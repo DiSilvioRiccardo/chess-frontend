@@ -29,7 +29,6 @@ function Puzzle() {
       setIsLogic(true);
     } 
     setPuzzle(puzzle);
-    console.log(puzzle);
     setLoading(false);
   };
 
