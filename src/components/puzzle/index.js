@@ -19,6 +19,7 @@ function Puzzle() {
 
   const [isLogic, setIsLogic] = useState(false);
   const [didForm, setDidForm] = useState(false);
+  const [profile, setProfile] = useState({});
 
   const navigate = useNavigate();
 
@@ -34,7 +35,7 @@ function Puzzle() {
 
   const requestProfile = async () => {
     const response = await PuzzleService.getProfile();
-
+    setProfile(response);
     if (response.did_initial_form && response.elo < 700) {
       setDidForm(true);
     } else if (response.did_700_form && response.elo < 1500) {
@@ -74,9 +75,9 @@ function Puzzle() {
               {didForm ? (
                 <Box>
                   {isLogic ? (
-                    <Box sx={{ padding: "30px" }}><Quiz puzzle={puzzle} /></Box>
+                    <Box sx={{ padding: "30px" }}><Quiz puzzle={puzzle} profile={profile} /></Box>
                   ) : (
-                    <Box sx={{ padding: "30px" }}><Chess fen={puzzle.fen} moves={puzzle.moves} puzzleId={puzzle.puzzleId}/></Box>
+                    <Box sx={{ padding: "30px" }}><Chess fen={puzzle.fen} moves={puzzle.moves} puzzleId={puzzle.puzzleId} rating={puzzle.rating}/></Box>
                   )}
                 </Box>
               ) : (

@@ -20,14 +20,14 @@ function Quiz(props) {
 
   const solutions = puzzle.solutions.split(" ");
 
-  const [question] = useState(puzzle.problem_statement);
   const [answers] = useState([...solutions]);
   const [value, setValue] = useState("");
   const [openCorrect, setOpenCorrect] = useState(false);
   const [openIncorrect, setOpenIncorrect] = useState(false);
   const [answered, setAnswered] = useState(false);
+  const [profile] = useState(props.profile);
 
-  const { seconds, minutes, totalSeconds, pause, start } = useStopwatch({
+  const { seconds, minutes, totalSeconds, pause } = useStopwatch({
     autoStart: true,
   });
 
@@ -69,6 +69,30 @@ function Quiz(props) {
     }
   };
 
+  const setCognitiveDevelopment = (rating) => {
+    console.log(rating);
+    if (rating < 700) {
+      return (
+        <Alert variant="filled" severity="success">
+          Desarrollo cognitivo: Atención | Logico-Matematico | Reorganizacion
+        </Alert>
+      );
+    } else if (rating < 1500) {
+      return (
+        <Alert variant="filled" severity="success">
+          Desarrollo cognitivo: Planificacion | Resolucion de problemas |
+          Reorganizacion
+        </Alert>
+      );
+    } else if (rating > 2000) {
+      return (
+        <Alert variant="filled" severity="success">
+          Desarrollo cognitivo: Evaluacion | Comprensión | Pensamiento lateral
+        </Alert>
+      );
+    }
+  };
+
   const handleNewGameClick = () => {
     window.location.reload(false);
   };
@@ -96,7 +120,9 @@ function Quiz(props) {
     <Grid container spacing={2} sx={{ mt: "5%" }}>
       <Grid xs={4}>
         <Grid container direction={"column"} spacing={2}>
-          <Grid xs={2}></Grid>
+          <Grid xs={2}>
+            {setCognitiveDevelopment(profile.elo)}
+          </Grid>
           <Grid xs={2}>
             <Alert variant="filled" severity="info">
               Tiempo transcurrido: {formatTime(minutes)}:{formatTime(seconds)}

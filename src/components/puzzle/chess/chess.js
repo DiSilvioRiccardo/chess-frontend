@@ -1,6 +1,6 @@
 import "./chess.css";
 import { Chessboard } from "react-chessboard";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useStopwatch } from "react-timer-hook";
 
@@ -8,7 +8,6 @@ import Grid from "@mui/material/Unstable_Grid2";
 import Box from "@mui/material/Box";
 import Alert from "@mui/material/Alert";
 import Backdrop from "@mui/material/Backdrop";
-import CircularProgress from "@mui/material/CircularProgress";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import Button from "@mui/material/Button";
 
@@ -22,9 +21,13 @@ function PuzzleSolver(props) {
   const [game, setGame] = useState(new Chess(props.fen));
   const [puzzleSolved, setPuzzleSolved] = useState(false);
   const [tries, setTries] = useState(0);
+  const [rating] = useState(props.rating);
+
   const orientation = props.fen.split(" ")[1] === "w" ? "black" : "white";
-  const { seconds, minutes, totalSeconds, pause } =
-    useStopwatch({ autoStart: true });
+
+  const { seconds, minutes, totalSeconds, pause } = useStopwatch({
+    autoStart: true,
+  });
 
   function increaseTries() {
     setTries(tries + 1);
@@ -39,8 +42,32 @@ function PuzzleSolver(props) {
   };
 
   const formatTime = (time) => {
-    return String(time).padStart(2, '0')
-  }
+    return String(time).padStart(2, "0");
+  };
+
+  const setCognitiveDevelopment = (rating) => {
+    console.log(rating);
+    if (rating < 700) {
+      return (
+        <Alert variant="filled" severity="success">
+          Desarrollo cognitivo: Atención | Logico-Matematico | Reorganizacion
+        </Alert>
+      );
+    } else if (rating < 1500) {
+      return (
+        <Alert variant="filled" severity="success">
+          Desarrollo cognitivo: Planificacion | Resolucion de problemas |
+          Reorganizacion
+        </Alert>
+      );
+    } else if (rating > 2000) {
+      return (
+        <Alert variant="filled" severity="success">
+          Desarrollo cognitivo: Evaluacion | Comprensión | Pensamiento lateral
+        </Alert>
+      );
+    }
+  };
 
   useEffect(() => {
     if (puzzleSolved) {
@@ -75,6 +102,9 @@ function PuzzleSolver(props) {
       <Grid item xs={4}>
         <Grid container direction={"column"} spacing={2}>
           <Grid item xs={2}>
+            {setCognitiveDevelopment(rating)}
+          </Grid>
+          <Grid item xs={2}>
             <ThemeProvider theme={myTheme}>
               {game.turn() === "b" ? (
                 <Alert variant="filled" severity="success" color="black">
@@ -87,13 +117,14 @@ function PuzzleSolver(props) {
               )}
             </ThemeProvider>
           </Grid>
-          <Grid item xs={2}>
-            {puzzleSolved ? (
+
+          {puzzleSolved ? (
+            <Grid item xs={2}>
               <Alert variant="outlined" severity="success">
                 Puzzle Resuelto!, Intentos fallidos: {tries}
               </Alert>
-            ) : null}
-          </Grid>
+            </Grid>
+          ) : null}
           <Grid item xs={2}>
             <Alert variant="filled" severity="info">
               Movimiento reciente: {lastMove}
@@ -101,30 +132,34 @@ function PuzzleSolver(props) {
           </Grid>
           <Grid item xs={2}>
             <Alert variant="filled" severity="info">
-             Tiempo transcurrido: {formatTime(minutes)}:{formatTime(seconds)}
+              Tiempo transcurrido: {formatTime(minutes)}:{formatTime(seconds)}
             </Alert>
           </Grid>
-          <Grid item xs={2}>
-            {game.in_checkmate() ? (
+
+          {game.in_checkmate() ? (
+            <Grid item xs={2}>
               <Alert variant="outlined" severity="error">
                 Checkmate!
               </Alert>
-            ) : null}
-          </Grid>
-          <Grid item xs={2}>
-            {game.in_draw() ? (
+            </Grid>
+          ) : null}
+
+          {game.in_draw() ? (
+            <Grid item xs={2}>
               <Alert severity="success" color="info">
                 Empate!
               </Alert>
-            ) : null}
-          </Grid>
-          <Grid item xs={2}>
-            {game.in_stalemate() ? (
+            </Grid>
+          ) : null}
+
+          {game.in_stalemate() ? (
+            <Grid item xs={2}>
               <Alert severity="success" color="info">
                 Stalemate!
               </Alert>
-            ) : null}
-          </Grid>
+            </Grid>
+          ) : null}
+
           <Grid item xs={2}>
             <Alert variant="outlined" severity="success">
               Movimientos intentado: {tries}
@@ -196,8 +231,6 @@ function CustomChessboard({
   const [squareStyles, setSquareStyles] = useState({});
   const [sourceSquare, setSourceSquare] = useState(null);
   const [movesArray, setMovesArray] = useState(moves.split(" "));
-
-  let inputElement = useRef();
 
   let chessboard = (
     <Chessboard
@@ -355,10 +388,10 @@ function CustomChessboard({
 }
 
 function App(props) {
-
   const [game] = useState(props.fen);
   const [moves] = useState(props.moves);
   const [puzzleId] = useState(props.puzzleId);
+  const [rating] = useState(props.rating);
 
   const { auth } = useAuth();
   const navigate = useNavigate();
@@ -371,7 +404,12 @@ function App(props) {
     <>
       {auth ? (
         <div class="chessboard-div">
-          <PuzzleSolver fen={game} moves={moves} puzzleId={puzzleId} />
+          <PuzzleSolver
+            fen={game}
+            moves={moves}
+            puzzleId={puzzleId}
+            rating={rating}
+          />
         </div>
       ) : (
         <Backdrop
