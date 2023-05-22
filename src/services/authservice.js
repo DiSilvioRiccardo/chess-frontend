@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = "http://ec2-3-84-200-243.compute-1.amazonaws.com:8000/auth/";
+const API_URL = "http://ec2-34-229-147-171.compute-1.amazonaws.com:8000/auth/";
 
 const register = (username, email, password) => {
   return axios.post(API_URL + "signup", {

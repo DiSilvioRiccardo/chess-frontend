@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = "http://ec2-3-84-200-243.compute-1.amazonaws.com:8000/puzzles/";
+const API_URL = "http://ec2-34-229-147-171.compute-1.amazonaws.com:8000/puzzles/";
 
 const config = {
   headers: {
@@ -10,7 +10,7 @@ const config = {
 
 const getProfile = () => {
   return axios
-    .get("http://ec2-3-84-200-243.compute-1.amazonaws.com:8000/auth/profile", config)
+    .get("http://ec2-34-229-147-171.compute-1.amazonaws.com:8000/auth/profile", config)
     .then((response) => {
       return response.data;
     })
