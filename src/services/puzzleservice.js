@@ -10,7 +10,7 @@ const config = {
 
 const getProfile = () => {
   return axios
-    .get("http://localhost:8000/auth/profile", config)
+    .get("http://ec2-3-84-200-243.compute-1.amazonaws.com:8000/auth/profile", config)
     .then((response) => {
       return response.data;
     })
