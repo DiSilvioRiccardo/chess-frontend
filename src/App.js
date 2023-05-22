@@ -21,7 +21,7 @@ const App = () => {
   return (
     <div>
       <header class="header">
-        <a class="logo" href="/form">
+        <a class="logo" href="/puzzle">
           Estudio de la aplicación de aprendizaje de ajedrez en la competencia
           cognitiva
         </a>
