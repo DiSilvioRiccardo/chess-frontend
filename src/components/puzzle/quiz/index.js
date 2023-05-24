@@ -53,6 +53,9 @@ function Quiz(props) {
           correct: true,
         });
         setAnswered(true);
+        sleep(1500).then(() => {
+          window.location.reload(false);
+        });
       }
       pause();
       setOpenCorrect(true);

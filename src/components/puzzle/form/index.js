@@ -30,7 +30,7 @@ function Form() {
   }
 
   function handleSubmmit(e) {
-    if (page >= 54) {
+    if (page >= 40) {
       sleep.cancel();
       sleep.promise.then(() => {
         submitForm();

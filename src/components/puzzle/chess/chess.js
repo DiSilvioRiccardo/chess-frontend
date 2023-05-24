@@ -33,6 +33,10 @@ function PuzzleSolver(props) {
     setTries(tries + 1);
   }
 
+  const handleTimeout = (ms) => {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+  };
+
   const handleChildStateChange = (game) => {
     setGame(game);
   };
@@ -44,6 +48,14 @@ function PuzzleSolver(props) {
   const formatTime = (time) => {
     return String(time).padStart(2, "0");
   };
+
+  useEffect(() => {
+    if (puzzleSolved) {
+      handleTimeout(3000).then(() => {
+        window.location.reload(false);
+      });
+    }
+  }, [puzzleSolved]);
 
   const setCognitiveDevelopment = (rating) => {
     if (rating < 700) {
