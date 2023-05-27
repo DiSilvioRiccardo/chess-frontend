@@ -128,7 +128,7 @@ function PuzzleSolver(props) {
             </ThemeProvider>
           </Grid>
 
-          {puzzleSolved ? (
+          { puzzleSolved ? (
             <Grid item xs={2}>
               <Alert variant="outlined" severity="success">
                 Puzzle Resuelto!, Intentos fallidos: {tries}

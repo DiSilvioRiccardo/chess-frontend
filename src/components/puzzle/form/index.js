@@ -3,42 +3,26 @@ import Box from "@mui/material/Box";
 import PuzzleService from "../../../services/puzzleservice";
 
 function Form() {
-  let afterInitialLoading = false;
   var page = 0;
-  var sleep = timeout(20000);
 
   function submitForm() {
     PuzzleService.submitForm();
   }
 
   function timeout(ms) {
-    var timeout, promise;
-
-    promise = new Promise(function (resolve, reject) {
-      timeout = setTimeout(function () {
-        resolve("timeout done");
-      }, ms);
-    });
-
-    return {
-      promise: promise,
-      cancel: function () {
-        console.log("timeout cancelled");
-        clearTimeout(timeout);
-      }, //return a canceller as well
-    };
+    return new Promise((resolve) => setTimeout(resolve, ms));
   }
 
   function handleSubmmit(e) {
+    console.log(page); 
     if (page >= 40) {
-      sleep.cancel();
-      sleep.promise.then(() => {
+      timeout(10000).then(() => {
+        console.log("timeout done, submiting form")
         submitForm();
         window.location.reload();
       });
     }
     page++;
-    console.log(page); 
   }
   
 
