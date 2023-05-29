@@ -72,23 +72,6 @@
   color: rgb(136, 136, 136);
 }
 
-.login input[type="text"],
-input[type="password"] {
-  margin-bottom: 1em;
-  background: rgba(255, 255, 255, 0);
-  border-bottom-style: solid;
-  border-bottom-width: thin;
-  border-bottom-color: #000000;
-  border-radius: 15px;
-  color: #000000;
-  animation: login-input-focus-initial 1s normal forwards;
-  padding-right: 30px;
-}
-
-.login input[type="text"]:focus,
-Input[type="password"]:focus {
-  animation: login-input-focus 1s normal forwards;
-}
 
 .login-remember {
   display: flex;

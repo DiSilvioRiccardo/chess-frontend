@@ -1,18 +1,24 @@
 import React, { useState, useRef, useEffect } from "react";
 import Form from "react-validation/build/form";
-import Input from "react-validation/build/input";
-import CheckButton from "react-validation/build/button";
-import Alert from "@mui/material/Alert";
+
 import { isEmail } from "validator";
 import { useNavigate } from "react-router-dom";
-import "./register.css";
+
+import { Container, Typography } from "@mui/material";
+import Box from "@mui/material/Box";
+import TextField from "@mui/material/TextField";
+import Button from "@mui/material/Button";
+import Alert from "@mui/material/Alert";
+import Snackbar from "@mui/material/Snackbar";
 
 import AuthService from "../../../services/authservice";
 
 const required = (value) => {
   if (!value) {
     return (
-      <div className="invalid-feedback d-block">This field is required!</div>
+      <Snackbar open={true} autoHideDuration={6000}>
+        <Alert severity="error">Por favor llene todos los campos</Alert>
+      </Snackbar>
     );
   }
 };
@@ -20,7 +26,9 @@ const required = (value) => {
 const validEmail = (value) => {
   if (!isEmail(value)) {
     return (
-      <div className="invalid-feedback d-block">This is not a valid email.</div>
+      <Snackbar open={true} autoHideDuration={6000}>
+        <Alert severity="error">Este no es un correo valido</Alert>
+      </Snackbar>
     );
   }
 };
@@ -28,9 +36,11 @@ const validEmail = (value) => {
 const vusername = (value) => {
   if (value.length < 3 || value.length > 20) {
     return (
-      <div className="invalid-feedback d-block">
-        The username must be between 3 and 20 characters.
-      </div>
+      <Snackbar open={true} autoHideDuration={6000}>
+        <Alert severity="error">
+          El nombre de usuario debe tener entre 3 y 20 caracteres
+        </Alert>
+      </Snackbar>
     );
   }
 };
@@ -38,9 +48,11 @@ const vusername = (value) => {
 const vpassword = (value) => {
   if (value.length < 6 || value.length > 40) {
     return (
-      <div className="invalid-feedback d-block">
-        The password must be between 6 and 40 characters.
-      </div>
+      <Snackbar open={true} autoHideDuration={6000}>
+        <Alert severity="error">
+          La contraseña debe tener entre 6 y 40 caracteres
+        </Alert>
+      </Snackbar>
     );
   }
 };
@@ -77,14 +89,31 @@ const Register = (props) => {
     setMessage("");
     setSuccessful(false);
 
-    form.current.validateAll();
+    console.log("registering")
 
-    if (checkBtn.current.context._errors.length === 0) {
+    if(email && username && password){
+
+      if(username < 3 || username > 20){
+        setMessage("El nombre de usuario debe tener entre 3 y 20 caracteres");
+        setSuccessful(false);
+        return;
+      }
+      if(!isEmail(email)){
+        setMessage("Este no es un correo valido");
+        setSuccessful(false);
+        return;
+      }
+      if(password < 6 || password > 40){
+        setMessage("La contraseña debe tener entre 6 y 40 caracteres");
+        setSuccessful(false);
+        return;
+      }
+
       AuthService.register(username, email, password).then(
         (response) => {
           if (response.data.result === "user created") {
             setMessage(
-              "El usuario ha sido creado correctamente., puede iniciar sesión con el mismo"
+              "El usuario ha sido creado correctamente, puede iniciar sesión con el mismo"
             );
             setSuccessful(true);
           }
@@ -100,13 +129,20 @@ const Register = (props) => {
             setMessage("El usuario ya existe, por favor intente con otro");
           } else if (resMessage === "email already exists") {
             setMessage("El correo ya existe, por favor intente con otro");
-          } else {
+          } else if(resMessage === "username already exists"){
+            setMessage("El nombre de usuario ya existe, por favor intente con otro");
+          }else{
             setMessage("Ha ocurrido un error, por favor intente más tarde");
           }
           setSuccessful(false);
         }
       );
+    }else{
+      setMessage("Por favor llene todos los campos");
+      setSuccessful(false);
+      return;
     }
+  
   };
 
   useEffect(() => {
@@ -119,71 +155,77 @@ const Register = (props) => {
 
   return (
     <>
-      <div class="login-container">
+      <Container component="main" maxWidth="sm">
         <Form onSubmit={handleRegister} ref={form}>
-          <div class="container-login">
-            <div class="login-box">
-              <div class="login">
-                <h1>Registro</h1>
-                <Input
-                  id="username"
-                  type="text"
-                  placeholder="Username"
-                  name="username"
-                  value={username}
-                  onChange={onChangeUsername}
-                  validations={[required]}
-                  style={{ width: "88%" }}
-                />
-                <label for="username" class="login-input-icon">
-                  <i class="fa fa-user"></i>
-                </label>
-                <Input
-                  id="password"
-                  type="password"
-                  placeholder="Password"
-                  name="password"
-                  value={password}
-                  onChange={onChangePassword}
-                  validations={[required]}
-                  style={{ width: "88%" }}
-                />
-                <label for="password" class="login-input-icon">
-                  <i class="fa fa-lock"></i>
-                </label>
-                <Input
-                  id="email"
-                  type="text"
-                  placeholder="Email"
-                  name="email"
-                  value={email}
-                  onChange={onChangeEmail}
-                  style={{ width: "88%" }}
-                  validations={[required, validEmail]}
-                />
-                <label for="email" class="login-input-icon">
-                  <i class="fa fa-user"></i>
-                </label>
-                <CheckButton ref={checkBtn}>Register </CheckButton>
-                <span class="login-separator"></span>
-                <div class="login-alert" style={{ marginTop: "10px" }}>
-                  {message && (
-                    <Alert severity={successful ? "success" : "error"}>
-                      {message}
-                    </Alert>
-                  )}
-                </div>
-              </div>
-            </div>
-          </div>
+          <Box
+            sx={{
+              boxShadow: 3,
+              borderRadius: 2,
+              px: 4,
+              py: 6,
+              marginTop: "15%",
+              marginBottom: "5%",
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <Typography component="h1" variant="h5">
+              Registrese
+            </Typography>
+            <Box>
+              {message && (
+                <Alert severity={successful ? "success" : "error"}>
+                  {message}
+                </Alert>
+              )}
+              <TextField
+                margin="normal"
+                required
+                fullWidth
+                id="username"
+                label="Nombre de Usuario"
+                name="username"
+                autoComplete="username"
+                onChange={onChangeUsername}
+                validations={[required, vusername]}
+                autoFocus
+              />
+              <TextField
+                margin="normal"
+                required
+                fullWidth
+                id="email"
+                label="Correo Electronico"
+                name="email"
+                autoComplete="email"
+                onChange={onChangeEmail}
+                validations={[required, validEmail]}
+                autoFocus
+              />
+              <TextField
+                margin="normal"
+                type="password"
+                required
+                fullWidth
+                id="password"
+                label="Contraseña"
+                onChange={onChangePassword}
+                validations={[required, vpassword]}
+              />
+              <Button
+                type="submit"
+                fullWidth
+                variant="contained"
+                sx={{ mt: 3, mb: 2 }}
+              >
+                Registrese!
+              </Button>
+            </Box>
+          </Box>
         </Form>
-        <div
-          class="Alert"
-          style={{
-            marginTop: "40px",
-          }}
-        ></div>
-      </div>
+      </Container>
     </>
   );
 };

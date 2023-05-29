@@ -1,6 +1,6 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "Chess Cognitive App",
+  "name": "  Estudio de la aplicación de aprendizaje de ajedrez en la competencia cognitiva",
   "icons": [
     {
       "src": "favicon.ico",

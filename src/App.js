@@ -34,7 +34,7 @@ const App = () => {
           {user ? (
             <>
               <li>
-                <a href="#one" class="link link-theme link-arrow">
+                <a class="link link-theme link-arrow">
                   {user}
                 </a>
               </li>
