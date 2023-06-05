@@ -1,5 +1,5 @@
 import "./chess.css";
-import { Chessboard } from "react-chessboard";
+  import { Chessboard } from "react-chessboard";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useStopwatch } from "react-timer-hook";
@@ -14,6 +14,50 @@ import Button from "@mui/material/Button";
 import Chess from "chess.js";
 import { useAuth } from "../../../common/authHook";
 import PuzzleService from "../../../services/puzzleservice";
+
+
+/*
+Importaciones:
+
+Se importa el archivo de estilos "./chess.css".
+Se importa el componente "Chessboard" de la biblioteca "react-chessboard".
+Se importan los hooks useState y useEffect de React.
+Se importa el hook useNavigate de "react-router-dom" para la navegación.
+Se importa el hook useStopwatch de "react-timer-hook" para el control del tiempo.
+Se importan varios componentes y elementos de Material-UI, como Grid, Box, Alert, Backdrop y Button.
+Se importa la biblioteca "chess.js" para manipular el juego de ajedrez.
+Se importa el hook useAuth de un archivo "authHook" personalizado.
+Se importa el servicio PuzzleService de un archivo "puzzleservice" personalizado.
+
+Función PuzzleSolver:
+
+Es el componente principal que se exporta al final del archivo.
+Recibe props como argumento.
+Utiliza varios estados mediante el hook useState para controlar diferentes aspectos del juego de ajedrez.
+Calcula la orientación del tablero en función de la notación FEN recibida en las props.
+Utiliza el hook useStopwatch para controlar el tiempo transcurrido en el juego.
+Define la función "increaseTries" que se utiliza para incrementar el número de intentos realizados en el puzzle.
+Define la función "handleTimeout" que devuelve una promesa que se resuelve después de un tiempo determinado.
+Define la función "handleChildStateChange" que se utiliza para actualizar el estado del juego cuando el componente "CustomChessboard" cambia.
+Define la función "handleNewGameClick" que recarga la página para iniciar un nuevo juego.
+Define la función "formatTime" que formatea el tiempo transcurrido en minutos y segundos.
+Utiliza el hook useEffect para realizar acciones después de que el puzzle se haya resuelto.
+Define la función "setCognitiveDevelopment" que devuelve un componente Alert de Material-UI según la puntuación del puzzle.
+Utiliza el hook useEffect para enviar los resultados del puzzle al servicio PuzzleService cuando se resuelve el puzzle.
+Define un objeto "myTheme" que define la paleta de colores personalizada para los componentes de Material-UI.
+Devuelve la estructura del componente PuzzleSolver, que incluye una cuadrícula de elementos de Material-UI y el componente "CustomChessboard".
+
+Función CustomChessboard:
+
+Es un componente secundario utilizado en el componente PuzzleSolver.
+Utiliza el hook useState para controlar los estilos de cada casilla del tablero.
+Utiliza el hook useState para controlar la casilla de origen seleccionada para un movimiento.
+Utiliza el hook useState para almacenar y gestionar la lista de movimientos del puzzle.
+Renderiza el componente Chessboard de la biblioteca "react-chessboard" con las propiedades necesarias.
+Utiliza el hook useEffect para realizar el primer movimiento automáticamente después de un tiempo determinado.
+Define la función "makeAMove" que realiza un movimiento en el juego de ajedrez y actualiza los estados correspondientes.
+Define las funciones de manejo de eventos "onDrop", "
+*/
 
 function PuzzleSolver(props) {
   const [lastMove, setLastMove] = useState("");

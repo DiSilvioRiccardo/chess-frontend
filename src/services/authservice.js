@@ -1,6 +1,28 @@
 import axios from "axios";
 
-const API_URL = "http://ec2-34-229-147-171.compute-1.amazonaws.com:8000/auth/";
+const API_URL = "http://localhost:8000/auth/";
+
+/*
+Primero, se importa la biblioteca Axios para realizar solicitudes HTTP.
+
+API_URL es la URL base de la API del servidor de autenticación.
+
+La función register toma un nombre de usuario, correo electrónico y contraseña como parámetros y realiza una solicitud POST a la ruta 
+API_URL + "signup" para registrar un nuevo usuario en el servidor. Devuelve una promesa que se resuelve con la respuesta del servidor.
+
+La función login toma un nombre de usuario y una contraseña como parámetros y realiza una solicitud POST a la ruta API_URL + 
+"login" para iniciar sesión en el servidor. Si la solicitud es exitosa, almacena el token de acceso en el almacenamiento local del navegador y devuelve la respuesta del servidor. Si la solicitud falla, lanza un error.
+
+La función logout elimina el usuario almacenado en el almacenamiento local del navegador y realiza una solicitud POST a la ruta API_URL 
++ "signout" para cerrar sesión en el servidor. Devuelve una promesa que se resuelve con la respuesta del servidor.
+
+La función getCurrentUser obtiene el token de acceso almacenado en el almacenamiento local y realiza una solicitud POST a la ruta 
+API_URL + "validate" para verificar la validez del token y obtener información del usuario actual. Devuelve una promesa que se resuelve 
+con el nombre de usuario del usuario actual. Si la solicitud falla, lanza un error.
+
+El objeto AuthService contiene todas las funciones disponibles para interactuar con el servidor de autenticación. Estas funciones se 
+exportan para que puedan ser utilizadas en otros módulos de la aplicación.
+*/
 
 const register = (username, email, password) => {
   return axios.post(API_URL + "signup", {

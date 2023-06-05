@@ -22,14 +22,12 @@ const AuthProvider = ({ children }) => {
           setUser(null);
           return;
         }
-        console.log("token is not null")
-        const res = await axios.post("http://ec2-34-229-147-171.compute-1.amazonaws.com:8000/auth/validate", {
+        const res = await axios.post("http://localhost:8000/auth/validate", {
           token: JSON.parse(localStorage.getItem("token")),
         });
         
         setAuth(true);
         setUser(res.data.username);
-        console.log(user);
       } catch (error) {
         console.log(error);
         setUser(null);
